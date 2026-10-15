@@ -12,7 +12,7 @@ export function errorHandler(error, _request, response, _next) {
   const status = Number.isInteger(error.status) ? error.status : 500;
   if (status >= 500) console.error("API request failed.", error.cause ?? error);
   response.status(status).json({
-    message: status === 502 || status === 503
+    message: status === 429 || status === 502 || status === 503
       ? error.message
       : status >= 500
         ? "The server could not complete the resume analysis."

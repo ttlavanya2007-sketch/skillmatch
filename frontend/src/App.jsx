@@ -239,7 +239,7 @@ function Analyzer() {
           <button className="analyze-button" type="submit" disabled={!file || !jobDescription.trim() || isSubmitting}>
             <span>{isSubmitting ? "Analyzing your resume…" : "Analyze my resume"}</span><span aria-hidden="true">→</span>
           </button>
-          <p className="privacy-note"><span aria-hidden="true">⌑</span> Sent to OpenAI for analysis and stored in MongoDB.</p>
+          <p className="privacy-note"><span aria-hidden="true">⌑</span> Sent to Gemini for analysis and stored in MongoDB.</p>
         </form>
         <div className="results-panel" aria-live="polite">
           {comparison ? <Results comparison={comparison} /> : <ResultsPlaceholder />}

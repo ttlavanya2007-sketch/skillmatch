@@ -2,7 +2,7 @@ import { Readable } from "node:stream";
 import mongoose from "mongoose";
 import ComparisonRequest from "../models/ComparisonRequest.js";
 import { createHttpError, getResumeFilename } from "../utils.js";
-import { analyzeResume } from "./openAIService.js";
+import { analyzeResume } from "./geminiService.js";
 
 function storeResume(bucket, file, filename) {
   return new Promise((resolve, reject) => {
