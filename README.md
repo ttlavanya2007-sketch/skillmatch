@@ -16,7 +16,7 @@ Create `backend\.env` with your MongoDB URI and Gemini API key:
 ```powershell
 MONGODB_URI=mongodb://127.0.0.1:27017/zero_to_shipped
 GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.8-flash
 ```
 
 For MongoDB Atlas, use your Atlas connection string instead. You can copy `backend\.env.example` and edit its values. Create a Gemini API key in Google AI Studio. Keep `backend\.env` private; it is ignored by Git. The Gemini key is only read by the backend and must never be added to frontend environment variables or code.
@@ -59,6 +59,6 @@ The frontend sends `POST /api/comparisons` as `multipart/form-data` with:
 - `resume`: a PDF file up to 4 MB (kept below Vercel's request payload limit)
 - `jobDescription`: non-empty text up to 20,000 characters
 
-The backend sends the PDF directly to Gemini as inline PDF data and requests structured JSON containing an estimated 0-100 role-alignment score, matched skills, missing job skills, a summary, and recommendations. Gemini extracts and analyzes the PDF; no PDF parser runs in the browser. `GEMINI_API_KEY` stays server-side; `GEMINI_MODEL` defaults to `gemini-2.5-flash`. The resume PDF is stored in MongoDB GridFS; the comparison record stores the file ID, job description, analysis, status, and timestamps. Failed Gemini calls are marked `failed`, and API quota/rate-limit errors are surfaced to the user. The score is an estimate, not a hiring decision.
+The backend sends the PDF directly to Gemini as inline PDF data and requests structured JSON containing an estimated 0-100 role-alignment score, matched skills, missing job skills, a summary, and recommendations. Gemini extracts and analyzes the PDF; no PDF parser runs in the browser. `GEMINI_API_KEY` stays server-side; `GEMINI_MODEL` defaults to `gemini-3.8-flash`. The resume PDF is stored in MongoDB GridFS; the comparison record stores the file ID, job description, analysis, status, and timestamps. Failed Gemini calls are marked `failed`, and API quota/rate-limit errors are surfaced to the user. The score is an estimate, not a hiring decision.
 
 On Vercel, configure `MONGODB_URI` and `GEMINI_API_KEY` in the backend service's environment variables. Set `GEMINI_MODEL` there only if you want a different Gemini model. Do not set the key on the frontend service.
