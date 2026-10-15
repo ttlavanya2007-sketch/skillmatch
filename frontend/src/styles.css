@@ -147,6 +147,10 @@ h1 span { color: var(--green); }
 .skill-group-title { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; color: #50564e; font-size: 10px; font-weight: 700; }.skill-count { display: grid; width: 16px; height: 16px; place-items: center; margin-left: auto; border-radius: 50%; background: #eff2ed; color: #7b8277; font-size: 8px; }
 .present-icon, .missing-icon { display: grid; width: 16px; height: 16px; place-items: center; border-radius: 50%; background: #e9f0e7; color: var(--green); font-size: 10px; }.missing-icon { background: #fff0e7; color: #bf744c; }
 .skill-pills { display: flex; flex-wrap: wrap; gap: 6px; }.skill-pills span { padding: 6px 7px; border: 1px solid #e6ebe2; border-radius: 4px; background: #f8faf6; color: #63705f; font-size: 9px; }.missing-group .skill-pills span { border-color: #f2e5da; background: #fffaf6; color: #99755e; }
+.empty-skills { margin: 0; color: #92958e; font-size: 9px; line-height: 1.5; }
+.recommendations { margin-top: 17px; padding-top: 14px; border-top: 1px solid #eee; }
+.recommendations h4 { margin: 0 0 8px; color: #50564e; font: 700 11px var(--font-display); }
+.recommendations ul { display: grid; gap: 6px; margin: 0; padding-left: 16px; color: #777c72; font-size: 10px; line-height: 1.5; }
 .demo-disclaimer { margin: 15px 0 0; color: #a0a39c; font-size: 9px; line-height: 1.5; }
 
 .how-section { display: grid; grid-template-columns: .8fr 1.2fr; gap: 85px; width: min(1080px, calc(100% - 64px)); margin: 0 auto; padding: 94px 0; }

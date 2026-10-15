@@ -1,7 +1,7 @@
 import multer from "multer";
 import { createHttpError } from "../utils.js";
 
-export const maxResumeBytes = 10 * 1024 * 1024;
+export const maxResumeBytes = 4 * 1024 * 1024;
 
 export const resumeUpload = multer({
   storage: multer.memoryStorage(),

@@ -31,6 +31,7 @@ export async function createComparison(request, response) {
       status: comparison.status,
       resumeFilename: comparison.resumeFilename,
       createdAt: comparison.createdAt,
+      analysis: comparison.analysis,
     },
   });
 }

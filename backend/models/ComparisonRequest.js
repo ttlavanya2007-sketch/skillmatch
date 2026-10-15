@@ -22,6 +22,13 @@ const comparisonRequestSchema = new mongoose.Schema(
       default: "pending_ai",
       required: true,
     },
+    analysis: {
+      score: { type: Number, min: 0, max: 100 },
+      summary: { type: String, maxlength: 1000 },
+      matchedSkills: [{ type: String, maxlength: 120 }],
+      missingSkills: [{ type: String, maxlength: 120 }],
+      recommendations: [{ type: String, maxlength: 300 }],
+    },
   },
   { timestamps: true },
 );

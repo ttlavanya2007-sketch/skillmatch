@@ -40,7 +40,7 @@ function ResumeIllustration() {
       </div>
       <div className="skills-float">
         <span className="skill-check" aria-hidden="true">✓</span>
-        <div><strong>AI comparison</strong><span>Score &amp; skills coming soon</span></div>
+        <div><strong>AI comparison</strong><span>Score &amp; skills insights</span></div>
       </div>
       <div className="art-caption"><span /> A little more confident, already.</div>
     </div>
@@ -70,31 +70,51 @@ function ResultsPlaceholder() {
         <span className="placeholder-star">✳</span>
       </div>
       <strong>Your results will land here.</strong>
-      <span>Submit a PDF and job description to save a comparison request.</span>
+      <span>Upload your resume and add a job description to see your match score.</span>
     </div>
   );
 }
 
 function Results({ comparison }) {
+  const { analysis } = comparison;
   return (
     <div className="results-content">
       <div className="results-topline">
-        <div><span className="step-number">02</span><span className="results-label">COMPARISON REQUEST</span></div>
-        <span className="demo-badge pending-badge">AI COMING LATER</span>
+        <div><span className="step-number">02</span><span className="results-label">RESUME MATCH</span></div>
+        <span className="demo-badge pending-badge">AI ANALYSIS</span>
       </div>
       <div className="result-score-row">
-        <div className="request-status-icon" aria-hidden="true">✓</div>
-        <div className="result-score-copy"><h3>Files received.</h3><p>Your resume and job description are saved.</p></div>
+        <div className="result-score-ring"><span>{analysis.score}</span><small>/100</small></div>
+        <div className="result-score-copy"><h3>Your match score</h3><p>{analysis.summary}</p></div>
       </div>
-      <div className="request-details">
-        <span>RESUME</span>
-        <strong>{comparison.resumeFilename}</strong>
-        <span>REQUEST ID</span>
-        <strong className="request-id">{comparison.id}</strong>
+      <div className="skills-columns">
+        <SkillGroup title="Skills found" skills={analysis.matchedSkills} />
+        <SkillGroup title="Skills to highlight" skills={analysis.missingSkills} missing />
       </div>
-      <p className="demo-disclaimer">
-        AI comparison is not connected yet. Your files are stored and ready for the comparison step to be added later.
-      </p>
+      {analysis.recommendations.length > 0 && (
+        <div className="recommendations">
+          <h4>Ways to strengthen your resume</h4>
+          <ul>{analysis.recommendations.map((item) => <li key={item}>{item}</li>)}</ul>
+        </div>
+      )}
+      <p className="demo-disclaimer">AI-generated estimate based on this job description; it is not a hiring decision.</p>
+    </div>
+  );
+}
+
+function SkillGroup({ title, skills, missing = false }) {
+  return (
+    <div className={`skill-group${missing ? " missing-group" : ""}`}>
+      <div className="skill-group-title">
+        <span className={missing ? "missing-icon" : "present-icon"}>{missing ? "+" : "✓"}</span>
+        {title}
+        <span className="skill-count">{skills.length}</span>
+      </div>
+      {skills.length > 0 ? (
+        <div className="skill-pills">{skills.map((skill) => <span key={skill}>{skill}</span>)}</div>
+      ) : (
+        <p className="empty-skills">No clear matches identified.</p>
+      )}
     </div>
   );
 }
@@ -117,10 +137,10 @@ function Analyzer() {
       setError("That file isn’t a PDF. Choose a PDF to continue.");
       return;
     }
-    if (nextFile.size > 10 * 1024 * 1024) {
+    if (nextFile.size > 4 * 1024 * 1024) {
       setFile(null);
       setComparison(null);
-      setError("That PDF is over 10 MB. Choose a smaller file to continue.");
+      setError("That PDF is over 4 MB. Choose a smaller file to continue.");
       return;
     }
     setFile(nextFile);
@@ -146,8 +166,7 @@ function Analyzer() {
     formData.append("jobDescription", jobDescription.trim());
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL ?? "";
-      const response = await fetch(`${apiUrl}/api/comparisons`, {
+      const response = await fetch("/api/comparisons", {
         method: "POST",
         body: formData,
       });
@@ -168,7 +187,7 @@ function Analyzer() {
       <div className="section-heading">
         <span className="section-kicker">THE QUICK CHECK</span>
         <h2 id="analyzer-title">Let’s see what you’ve got.</h2>
-        <p>Submit a resume and job description to create a comparison request.</p>
+        <p>Get an AI-powered score and skills breakdown for your target role.</p>
       </div>
       <div className="analyzer-card">
         <form className="upload-panel" onSubmit={handleSubmit}>
@@ -213,14 +232,14 @@ function Analyzer() {
               <span className="upload-subtitle">
                 {file ? "Ready when you are" : <>or <span>browse files</span> on your device</>}
               </span>
-              <span className="file-note">PDF only · Max 10 MB</span>
+              <span className="file-note">PDF only · Max 4 MB</span>
             </button>
           </div>
           {error && <p className="upload-error" role="alert">{error}</p>}
           <button className="analyze-button" type="submit" disabled={!file || !jobDescription.trim() || isSubmitting}>
-            <span>{isSubmitting ? "Saving your comparison…" : "Submit for comparison"}</span><span aria-hidden="true">→</span>
+            <span>{isSubmitting ? "Analyzing your resume…" : "Analyze my resume"}</span><span aria-hidden="true">→</span>
           </button>
-          <p className="privacy-note"><span aria-hidden="true">⌑</span> Submissions are stored in MongoDB.</p>
+          <p className="privacy-note"><span aria-hidden="true">⌑</span> Sent to OpenAI for analysis and stored in MongoDB.</p>
         </form>
         <div className="results-panel" aria-live="polite">
           {comparison ? <Results comparison={comparison} /> : <ResultsPlaceholder />}
@@ -234,7 +253,7 @@ function HowItWorks() {
   const steps = [
     { icon: "↑", label: "01 / UPLOAD", title: "Bring your resume", description: "One PDF is all you need to get started.", className: "upload-how" },
     { icon: "◎", label: "02 / SAVE", title: "Create your comparison", description: "Your resume and job description are saved together.", className: "scan-how" },
-    { icon: "↗", label: "03 / COMPARE", title: "Get your match insights", description: "AI scoring and skill suggestions are planned for a future update.", className: "grow-how" },
+    { icon: "↗", label: "03 / IMPROVE", title: "Get your match insights", description: "See your score, matched skills, and suggestions to strengthen your resume.", className: "grow-how" },
   ];
 
   return (
@@ -284,7 +303,7 @@ function App() {
                 <span className="avatar avatar-one">J</span><span className="avatar avatar-two">M</span>
                 <span className="avatar avatar-three">A</span><span className="avatar avatar-four">+</span>
               </div>
-              <span><strong>A little clarity goes a long way.</strong><br />Free to try. No account needed.</span>
+              <span><strong>A little clarity goes a long way.</strong><br />No account needed.</span>
             </div>
           </div>
           <ResumeIllustration />

@@ -2,6 +2,7 @@ import { Readable } from "node:stream";
 import mongoose from "mongoose";
 import ComparisonRequest from "../models/ComparisonRequest.js";
 import { createHttpError, getResumeFilename } from "../utils.js";
+import { analyzeResume } from "./openAIService.js";
 
 function storeResume(bucket, file, filename) {
   return new Promise((resolve, reject) => {
@@ -21,13 +22,14 @@ export async function createComparisonRequest(bucket, file, jobDescription) {
 
   const resumeFilename = getResumeFilename(file.originalname);
   let resumeFileId;
+  let comparison;
   try {
     resumeFileId = await storeResume(bucket, file, resumeFilename);
-    return await ComparisonRequest.create({
+    comparison = await ComparisonRequest.create({
       resumeFileId,
       resumeFilename,
       jobDescription,
-      status: "pending_ai",
+      status: "processing",
     });
   } catch (error) {
     if (resumeFileId) {
@@ -38,5 +40,20 @@ export async function createComparisonRequest(bucket, file, jobDescription) {
       }
     }
     throw error;
+  }
+
+  try {
+    comparison.analysis = await analyzeResume({ file, jobDescription });
+    comparison.status = "completed";
+    await comparison.save();
+    return comparison;
+  } catch (error) {
+    comparison.status = "failed";
+    try {
+      await comparison.save();
+    } catch (saveError) {
+      console.error("Failed to persist the resume analysis failure status.", saveError);
+    }
+    throw error.status ? error : createHttpError(502, "Resume analysis failed. Try again later.", { cause: error });
   }
 }

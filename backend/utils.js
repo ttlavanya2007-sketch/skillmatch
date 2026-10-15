@@ -1,5 +1,5 @@
-export function createHttpError(status, message) {
-  return Object.assign(new Error(message), { status });
+export function createHttpError(status, message, options) {
+  return Object.assign(new Error(message, options), { status });
 }
 
 export function getResumeFilename(originalName) {
