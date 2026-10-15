@@ -3,4 +3,4 @@
 **/.vite/
 .env
 **/.env
-!backend/.env.example
+
